@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:id="@+id/book_0"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="16dp"
+                android:gravity="center|left"
+                android:text="作ればわかる！Androidプログラミング" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/author_0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="金宏 和貴" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/publisher_0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="翔泳社" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp">
+            <TextView
+                android:id="@+id/status_0"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="12dp"
+                android:gravity="right"
+                android:text="ステータス：読了済" />
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/SplitLine_hor0"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height= "2dp"
+        android:background="#808080" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:id="@+id/book_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="16dp"
+                android:gravity="center|left"
+                android:text="プログラマのためのDocker教科書" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/author_1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="阿佐 志保 / 山田 祥寛" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/publisher_1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="翔泳社" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp">
+            <TextView
+                android:id="@+id/status_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="12dp"
+                android:gravity="right"
+                android:text="ステータス：購入予定" />
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/SplitLine_hor1"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height= "2dp"
+        android:background="#808080" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:id="@+id/book_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="16dp"
+                android:gravity="center|left"
+                android:text="Amazon Web Services 基礎からのネットワーク＆サーバー構築" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/author_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="玉川 憲 / 片山 暁雄 / 今井 雄太" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/publisher_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:text="日経BP社" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="30dp">
+            <TextView
+                android:id="@+id/status_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="12dp"
+                android:gravity="right"
+                android:text="ステータス：未読" />
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:id="@+id/SplitLine_hor2"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height= "2dp"
+        android:background="#808080" />
+
+</LinearLayout>
+

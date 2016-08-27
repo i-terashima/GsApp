@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+            <TextView
+                android:id="@+id/book_0"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textSize="16dp"
+                android:gravity="center|left"
+                android:text="作ればわかる！Androidプログラミング" />
+            <TextView
+                android:id="@+id/page_0"
+                android:layout_width="fill_parent"
+                android:layout_height="20dp"
+                android:textSize="12dp"
+                android:gravity="center|left"
+                android:text="p.120" />
+            <TextView
+                android:id="@+id/stock_0"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="15dp"
+                android:paddingLeft="10dp"
+                android:textSize="16dp"
+                android:gravity="center|left"
+                android:text="“TimePickerについては、特にコードは記述してありません。セット、あるいは解除ボタンが押されたときの処理を見ていきましょう。”" />
+        </LinearLayout>
+    <View
+        android:id="@+id/SplitLine_hor0"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height= "2dp"
+        android:background="#808080" />
+
+</LinearLayout>
+
