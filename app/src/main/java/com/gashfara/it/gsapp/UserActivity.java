@@ -21,7 +21,7 @@ import com.kii.cloud.storage.exception.CloudExecutionException;
 
 
 public class UserActivity extends ActionBarActivity {
-    //蜈･蜉帙☆繧九ン繝･繝ｼ縺ｧ縺吶��
+    //入力するビューです。
     private EditText mUsernameField;
     private EditText mPasswordField;
 
@@ -29,150 +29,150 @@ public class UserActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //閾ｪ蜍輔Ο繧ｰ繧､繝ｳ縺ｮ縺溘ａ菫晏ｭ倥＆繧後※縺�繧蟻ccess token繧定ｪｭ縺ｿ蜃ｺ縺吶�Ｕoken縺後≠繧後�ｰ繝ｭ繧ｰ繧､繝ｳ縺ｧ縺阪ｋ
+        //自動ログインのため保存されているaccess tokenを読み出す。tokenがあればログインできる
         SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
-        String token = pref.getString(getString(R.string.save_token), "");//菫晏ｭ倥＆繧後※縺�縺ｪ縺�譎ゅ�ｯ""
-        //token縺後↑縺�縺ｨ縺阪��
+        String token = pref.getString(getString(R.string.save_token), "");//保存されていない時は""
+        //tokenがないとき。
         if(token == "") {
-            //逕ｻ髱｢繧剃ｽ懊ｋ
+            //画面を作る
             CreateMyView(savedInstanceState);
         }else {
-            //閾ｪ蜍輔Ο繧ｰ繧､繝ｳ繧偵☆繧九��
+            //自動ログインをする。
             try {
-                //KiiCloud縺ｮAccessToken縺ｫ繧医ｋ繝ｭ繧ｰ繧､繝ｳ蜃ｦ逅�縲ょｮ御ｺ�縺吶ｋ縺ｨ邨先棡縺慶allback髢｢謨ｰ縺ｨ縺励※螳溯｡後＆繧後ｋ縲�
+                //KiiCloudのAccessTokenによるログイン処理。完了すると結果がcallback関数として実行される。
                 KiiUser.loginWithToken(callback, token);
             } catch (Exception e) {
-                //繝�繧､繧｢繝ｭ繧ｰ繧定｡ｨ遉ｺ
+                //ダイアログを表示
                 showAlert(R.string.operation_failed, e.getLocalizedMessage(), null);
-                //逕ｻ髱｢繧剃ｽ懊ｋ
+                //画面を作る
                 CreateMyView(savedInstanceState);
             }
         }
 
     }
-    //View繧剃ｽ懊ｋ縲ゅ＞縺､繧ＰnCreate縺ｧ繧�縺｣縺ｦ縺�繧九％縺ｨ
+    //Viewを作る。いつもonCreateでやっていること
     protected void CreateMyView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_user);
-        //EditText縺ｮ繝薙Η繝ｼ繧呈爾縺励∪縺�
+        //EditTextのビューを探します
         mUsernameField = (EditText) findViewById(R.id.username_field);
         mPasswordField = (EditText) findViewById(R.id.password_field);
-        //繝代せ繝ｯ繝ｼ繝峨ｒ髫�縺呵ｨｭ螳�
+        //パスワードを隠す設定
         mPasswordField.setTransformationMethod(new PasswordTransformationMethod());
-        //繝代せ繝ｯ繝ｼ繝峨�ｮ蜈･蜉帶枚蟄励ｒ蛻ｶ髯舌☆繧九�ょ盾閠�ｼ喇ttp://techbooster.jpn.org/andriod/ui/3857/
+        //パスワードの入力文字を制限する。参考：http://techbooster.jpn.org/andriod/ui/3857/
         mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        //逋ｻ骭ｲ繝懊ち繝ｳ
+        //登録ボタン
         Button signupBtn = (Button) findViewById(R.id.signup_button);
-        //繝ｭ繧ｰ繧､繝ｳ繝懊ち繝ｳ
+        //ログインボタン
         Button loginBtn = (Button) findViewById(R.id.login_button);
-        //繝ｭ繧ｰ繧､繝ｳ繝懊ち繝ｳ繧偵け繝ｪ繝�繧ｯ縺励◆譎ゅ�ｮ蜃ｦ逅�繧定ｨｭ螳�
+        //ログインボタンをクリックした時の処理を設定
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //繝ｭ繧ｰ繧､繝ｳ蜃ｦ逅�
+                //ログイン処理
                 onLoginButtonClicked(v);
             }
         });
-        //逋ｻ骭ｲ繝懊ち繝ｳ繧偵け繝ｪ繝�繧ｯ縺励◆譎ゅ�ｮ蜃ｦ逅�繧定ｨｭ螳�
+        //登録ボタンをクリックした時の処理を設定
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //逋ｻ骭ｲ蜃ｦ逅�
+                //登録処理
                 onSignupButtonClicked(v);
             }
         });
     }
-    //繝ｭ繧ｰ繧､繝ｳ蜃ｦ逅��ｼ壼盾閠�縲�http://documentation.kii.com/ja/guides/android/managing-users/sign-in/
+    //ログイン処理：参考　http://documentation.kii.com/ja/guides/android/managing-users/sign-in/
     public void onLoginButtonClicked(View v) {
-        //IME繧帝哩縺倥ｋ
+        //IMEを閉じる
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        //蜈･蜉帶枚蟄励ｒ蠕励ｋ
+        //入力文字を得る
         String username = mUsernameField.getText().toString();
         String password = mPasswordField.getText().toString();
         try {
-            //KiiCloud縺ｮ繝ｭ繧ｰ繧､繝ｳ蜃ｦ逅�縲ょｮ御ｺ�縺吶ｋ縺ｨ邨先棡縺慶allback髢｢謨ｰ縺ｨ縺励※螳溯｡後＆繧後ｋ縲�
+            //KiiCloudのログイン処理。完了すると結果がcallback関数として実行される。
             KiiUser.logIn(callback, username, password);
         } catch (Exception e) {
-            //繝�繧､繧｢繝ｭ繧ｰ繧定｡ｨ遉ｺ
+            //ダイアログを表示
             showAlert(R.string.operation_failed, e.getLocalizedMessage(), null);
         }
     }
-    //繝�繧､繧｢繝ｭ繧ｰ繧定｡ｨ遉ｺ縺吶ｋ
+    //ダイアログを表示する
     void showAlert(int titleId, String message, AlertDialogFragment.AlertDialogListener listener ) {
         DialogFragment newFragment = AlertDialogFragment.newInstance(titleId, message, listener);
         newFragment.show(getFragmentManager(), "dialog");
     }
-    //逋ｻ骭ｲ蜃ｦ逅�
+    //登録処理
     public void onSignupButtonClicked(View v) {
-        //IME繧帝哩縺倥ｋ
+        //IMEを閉じる
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
-        //蜈･蜉帶枚蟄励ｒ蠕励ｋ
+        //入力文字を得る
         String username = mUsernameField.getText().toString();
         String password = mPasswordField.getText().toString();
         try {
-            //KiiCloud縺ｮ繝ｦ繝ｼ繧ｶ逋ｻ骭ｲ蜃ｦ逅�
+            //KiiCloudのユーザ登録処理
             KiiUser user = KiiUser.createWithUsername(username);
             user.register(callback, password);
         } catch (Exception e) {
             showAlert(R.string.operation_failed, e.getLocalizedMessage(), null);
         }
     }
-    //譁ｰ隕冗匳骭ｲ縲√Ο繧ｰ繧､繝ｳ縺ｮ譎ゅ↓蜻ｼ縺ｳ蜃ｺ縺輔ｌ繧九さ繝ｼ繝ｫ繝舌ャ繧ｯ髢｢謨ｰ
+    //新規登録、ログインの時に呼び出されるコールバック関数
     KiiUserCallBack callback = new KiiUserCallBack() {
-        //繝ｭ繧ｰ繧､繝ｳ縺悟ｮ御ｺ�縺励◆譎ゅ↓閾ｪ蜍慕噪縺ｫ蜻ｼ縺ｳ蜃ｺ縺輔ｌ繧九�り�ｪ蜍輔Ο繧ｰ繧､繝ｳ縺ｮ譎ゅｂ蜻ｼ縺ｳ蜃ｺ縺輔ｌ繧�
+        //ログインが完了した時に自動的に呼び出される。自動ログインの時も呼び出される
         @Override
         public void onLoginCompleted(int token, KiiUser user, Exception e) {
             // setFragmentProgress(View.INVISIBLE);
             if (e == null) {
-                //閾ｪ蜍輔Ο繧ｰ繧､繝ｳ縺ｮ縺溘ａ縺ｫSharedPreference縺ｫ菫晏ｭ倥�ゅい繝励Μ縺ｮ繧ｹ繝医Ξ繝ｼ繧ｸ縲ょ盾閠�ｼ喇ttp://qiita.com/Yuki_Yamada/items/f8ea90a7538234add288
+                //自動ログインのためにSharedPreferenceに保存。アプリのストレージ。参考：http://qiita.com/Yuki_Yamada/items/f8ea90a7538234add288
                 SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
                 pref.edit().putString(getString(R.string.save_token), user.getAccessToken()).apply();
 
-                // Intent 縺ｮ繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ繧貞叙蠕励☆繧九�ＨetApplicationContext()縺ｧ閾ｪ蛻�縺ｮ繧ｳ繝ｳ繝�繧ｭ繧ｹ繝医ｒ蜿門ｾ励�る�ｷ遘ｻ蜈医�ｮ繧｢繧ｯ繝�繧｣繝薙ユ繧｣繝ｼ繧�.class縺ｧ謖�螳�
+                // Intent のインスタンスを取得する。getApplicationContext()で自分のコンテキストを取得。遷移先のアクティビティーを.classで指定
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                // 驕ｷ遘ｻ蜈医�ｮ逕ｻ髱｢繧貞他縺ｳ蜃ｺ縺�
+                // 遷移先の画面を呼び出す
                 startActivity(intent);
-                //謌ｻ繧後↑縺�繧医≧縺ｫActivity繧堤ｵゆｺ�縺励∪縺吶��
+                //戻れないようにActivityを終了します。
                 finish();
             } else {
-                //e縺桑iiCloud迚ｹ譛峨�ｮ繧ｯ繝ｩ繧ｹ繧堤ｶ呎価縺励※縺�繧区凾
+                //eがKiiCloud特有のクラスを継承している時
                 if (e instanceof CloudExecutionException)
-                    //KiiCloud迚ｹ譛峨�ｮ繧ｨ繝ｩ繝ｼ繝｡繝�繧ｻ繝ｼ繧ｸ繧定｡ｨ遉ｺ縲ゅヵ繧ｩ繝ｼ繝槭ャ繝医′驕輔≧
+                    //KiiCloud特有のエラーメッセージを表示。フォーマットが違う
                     showAlert(R.string.operation_failed, Util.generateAlertMessage((CloudExecutionException) e), null);
                 else
-                    //荳�闊ｬ逧�縺ｪ繧ｨ繝ｩ繝ｼ繧定｡ｨ遉ｺ
+                    //一般的なエラーを表示
                     showAlert(R.string.operation_failed, e.getLocalizedMessage(), null);
             }
         }
-        //譁ｰ隕冗匳骭ｲ縺ｮ譎ゅ↓閾ｪ蜍慕噪縺ｫ蜻ｼ縺ｳ蜃ｺ縺輔ｌ繧�
+        //新規登録の時に自動的に呼び出される
         @Override
         public void onRegisterCompleted(int token, KiiUser user, Exception e) {
             if (e == null) {
-                //閾ｪ蜍輔Ο繧ｰ繧､繝ｳ縺ｮ縺溘ａ縺ｫSharedPreference縺ｫ菫晏ｭ倥�ゅい繝励Μ縺ｮ繧ｹ繝医Ξ繝ｼ繧ｸ縲ょ盾閠�ｼ喇ttp://qiita.com/Yuki_Yamada/items/f8ea90a7538234add288
+                //自動ログインのためにSharedPreferenceに保存。アプリのストレージ。参考：http://qiita.com/Yuki_Yamada/items/f8ea90a7538234add288
                 SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
                 pref.edit().putString(getString(R.string.save_token), user.getAccessToken()).apply();
 
-                // Intent 縺ｮ繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ繧貞叙蠕励☆繧九�ＨetApplicationContext()縺ｧ閾ｪ蛻�縺ｮ繧ｳ繝ｳ繝�繧ｭ繧ｹ繝医ｒ蜿門ｾ励�る�ｷ遘ｻ蜈医�ｮ繧｢繧ｯ繝�繧｣繝薙ユ繧｣繝ｼ繧�.class縺ｧ謖�螳�
+                // Intent のインスタンスを取得する。getApplicationContext()で自分のコンテキストを取得。遷移先のアクティビティーを.classで指定
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                // 驕ｷ遘ｻ蜈医�ｮ逕ｻ髱｢繧貞他縺ｳ蜃ｺ縺�
+                // 遷移先の画面を呼び出す
                 startActivity(intent);
-                //謌ｻ繧後↑縺�繧医≧縺ｫActivity繧堤ｵゆｺ�縺励∪縺吶��
+                //戻れないようにActivityを終了します。
                 finish();
             } else {
-                //e縺桑iiCloud迚ｹ譛峨�ｮ繧ｯ繝ｩ繧ｹ繧堤ｶ呎価縺励※縺�繧区凾
+                //eがKiiCloud特有のクラスを継承している時
                 if (e instanceof CloudExecutionException)
-                    //KiiCloud迚ｹ譛峨�ｮ繧ｨ繝ｩ繝ｼ繝｡繝�繧ｻ繝ｼ繧ｸ繧定｡ｨ遉ｺ
+                    //KiiCloud特有のエラーメッセージを表示
                     showAlert(R.string.operation_failed, Util.generateAlertMessage((CloudExecutionException) e), null);
                 else
-                    //荳�闊ｬ逧�縺ｪ繧ｨ繝ｩ繝ｼ繧定｡ｨ遉ｺ
+                    //一般的なエラーを表示
                     showAlert(R.string.operation_failed, e.getLocalizedMessage(), null);
             }
         }
     };
 
-    //繝｡繝九Η繝ｼ髢｢菫ゑｼ壽悴菴ｿ逕ｨ
+    //メニュー関係：未使用
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -195,3 +195,4 @@ public class UserActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
