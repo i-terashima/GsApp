@@ -1,8 +1,10 @@
 package com.gashfara.it.gsapp;
 
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -34,95 +38,114 @@ import java.io.FileOutputStream;
 
 
 public class PostActivity extends ActionBarActivity {
-    //¡‰ñg—p‚·‚éƒCƒ“ƒeƒ“ƒg‚ÌŒ‹‰Ê‚Ì”Ô†B“K“–‚È’l‚ÅOK.
+    //ä»Šå›ä½¿ç”¨ã™ã‚‹ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã®çµæœã®ç•ªå·ã€‚é©å½“ãªå€¤ã§OK.
     private static final int IMAGE_CHOOSER_RESULTCODE = 1;
-    //‰æ‘œ‚ÌƒpƒX‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+    //ç”»åƒã®ãƒ‘ã‚¹ã‚’ä¿å­˜ã—ã¦ãŠã
     private String mImagePath = null;
-    //UP‚µ‚½‰æ‘œ‚ÌKiiObject
+    //UPã—ãŸç”»åƒã®KiiObject
     private KiiObject mKiiImageObject = null;
-    //“ü—Í‚µ‚½ƒRƒƒ“ƒg
+    private String title;
+    //å…¥åŠ›ã—ãŸã‚³ãƒ¡ãƒ³ãƒˆ
     private String comment;
-    //ƒJƒƒ‰‚ÅB‰e‚µ‚½‰æ‘œ‚Ìuri
+    //ã‚«ãƒ¡ãƒ©ã§æ’®å½±ã—ãŸç”»åƒã®uri
     private Uri mImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[] {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            ActivityCompat.requestPermissions(this, permissions, 1);
+        } else {
+// è¨±è«¾ã•ã‚Œã¦ã„ã‚‹ã®ã§ã€ã‚„ã‚ŠãŸã„ã“ã¨ã‚’ã™ã‚‹
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[] {
+                    Manifest.permission.CAMERA
+            };
+            ActivityCompat.requestPermissions(this, permissions, 1);
+        } else {
+// è¨±è«¾ã•ã‚Œã¦ã„ã‚‹ã®ã§ã€ã‚„ã‚ŠãŸã„ã“ã¨ã‚’ã™ã‚‹
+        }
         setContentView(R.layout.activity_post);
-        //‰æ‘œƒ{ƒ^ƒ“‚ÉƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ’Ç‰Á‚µ‚Ä‚¢‚Ü‚·B
+        //ç”»åƒãƒœã‚¿ãƒ³ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ ã—ã¦ã„ã¾ã™ã€‚
         Button attachBtn = (Button) findViewById(R.id.attach_button);
         attachBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ƒNƒŠƒbƒN‚µ‚½‚Í‰æ‘œ‘I‘ğ
+                //ã‚¯ãƒªãƒƒã‚¯ã—ãŸæ™‚ã¯ç”»åƒé¸æŠ
                 onAttachFileButtonClicked(v);
             }
         });
-        //ƒJƒƒ‰ƒ{ƒ^ƒ“‚ÉƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ’Ç‰Á‚µ‚Ä‚¢‚Ü‚·B
+        //ã‚«ãƒ¡ãƒ©ãƒœã‚¿ãƒ³ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ ã—ã¦ã„ã¾ã™ã€‚
         Button attachCameraBtn = (Button) findViewById(R.id.attach_camera_button);
         attachCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ƒNƒŠƒbƒN‚µ‚½‚ÍƒJƒƒ‰‹N“®‚·‚é
+                //ã‚¯ãƒªãƒƒã‚¯ã—ãŸæ™‚ã¯ã‚«ãƒ¡ãƒ©èµ·å‹•ã™ã‚‹
                 onAttachCameraFileButtonClicked(v);
             }
         });
-        //“Šeƒ{ƒ^ƒ“‚ÉƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ’Ç‰Á‚µ‚Ä‚¢‚Ü‚·B
+        //æŠ•ç¨¿ãƒœã‚¿ãƒ³ã«ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ ã—ã¦ã„ã¾ã™ã€‚
         Button postBtn = (Button) findViewById(R.id.post_button);
         postBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ƒNƒŠƒbƒN‚µ‚½‚Í“Še‚·‚é
+                //ã‚¯ãƒªãƒƒã‚¯ã—ãŸæ™‚ã¯æŠ•ç¨¿ã™ã‚‹
                 onPostButtonClicked(v);
             }
         });
     }
-    //‰æ‘œ‚Ì“Y•tƒ{ƒ^ƒ“‚ğ‚¨‚µ‚½‚Ìˆ—
+    //ç”»åƒã®æ·»ä»˜ãƒœã‚¿ãƒ³ã‚’ãŠã—ãŸæ™‚ã®å‡¦ç†
     public void onAttachFileButtonClicked(View v) {
-        //ƒMƒƒƒ‰ƒŠ[‚ğŠJ‚­ƒCƒ“ƒeƒ“ƒg‚ğì¬‚µ‚Ä‹N“®‚·‚éB
+        //ã‚®ãƒ£ãƒ©ãƒªãƒ¼ã‚’é–‹ãã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã‚’ä½œæˆã—ã¦èµ·å‹•ã™ã‚‹ã€‚
         Intent intent = new Intent();
-        //ƒtƒAƒCƒ‹‚Ìƒ^ƒCƒv‚ğİ’è
+        //ãƒ•ã‚¢ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
         intent.setType("image/*");
-        //‰æ‘œ‚ÌƒCƒ“ƒeƒ“ƒg
+        //ç”»åƒã®ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆ
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        //Activity‚ğ‹N“®
+        //Activityã‚’èµ·å‹•
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), IMAGE_CHOOSER_RESULTCODE);
     }
-    //ƒJƒƒ‰‚Ì“Y•tƒ{ƒ^ƒ“‚ğ‚¨‚µ‚½‚Ìˆ—
+    //ã‚«ãƒ¡ãƒ©ã®æ·»ä»˜ãƒœã‚¿ãƒ³ã‚’ãŠã—ãŸæ™‚ã®å‡¦ç†
     public void onAttachCameraFileButtonClicked(View v) {
-        //ƒJƒƒ‰‚Í‹@íˆË‘¶‚ª‘å‚«‚­A‚¢‚ë‚¢‚ëƒTƒ“ƒvƒ‹‚ğŒ©‚½‚Ù‚¤‚ª—Ç‚¢
-        //ƒRƒƒ“ƒg‚ÍXperia—p‚Éì‚Á‚½‚à‚ÌB•s—vB
-        //ƒJƒƒ‰‚ÌƒCƒ“ƒeƒ“ƒg‚ğì¬
+        //ã‚«ãƒ¡ãƒ©ã¯æ©Ÿç¨®ä¾å­˜ãŒå¤§ããã€ã„ã‚ã„ã‚ã‚µãƒ³ãƒ—ãƒ«ã‚’è¦‹ãŸã»ã†ãŒè‰¯ã„
+        //ã‚³ãƒ¡ãƒ³ãƒˆã¯Xperiaç”¨ã«ä½œã£ãŸã‚‚ã®ã€‚ä¸è¦ã€‚
+        //ã‚«ãƒ¡ãƒ©ã®ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã‚’ä½œæˆ
         //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //Activity‚ğ‹N“®
+        //Activityã‚’èµ·å‹•
         //startActivityForResult(Intent.createChooser(intent, "Camera"), IMAGE_CHOOSER_RESULTCODE);
-        //Œ»İ‚ğ‚à‚Æ‚Éˆêƒtƒ@ƒCƒ‹–¼‚ğì¬
+        //ç¾åœ¨æ™‚åˆ»ã‚’ã‚‚ã¨ã«ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ä½œæˆ
         String filename = System.currentTimeMillis() + ".jpg";
-        //İ’è‚ğ•Û‘¶‚·‚éƒpƒ‰ƒ[ƒ^‚ğì¬
+        //è¨­å®šã‚’ä¿å­˜ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä½œæˆ
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, filename);//ƒtƒ@ƒCƒ‹–¼
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");//ƒtƒ@ƒCƒ‹‚Ìí—Ş
-        //İ’è‚µ‚½ˆêƒtƒ@ƒCƒ‹‚ğì¬
+        values.put(MediaStore.Images.Media.TITLE, filename);//ãƒ•ã‚¡ã‚¤ãƒ«å
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");//ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡
+        //è¨­å®šã—ãŸä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆ
         mImageUri = getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        //ƒJƒƒ‰‚ÌƒCƒ“ƒeƒ“ƒg‚ğì¬
+        //ã‚«ãƒ¡ãƒ©ã®ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã‚’ä½œæˆ
         Intent intent = new Intent();
-        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//ƒJƒƒ‰
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);//‰æ‘œ‚Ì•Û‘¶æ
-        //ƒCƒ“ƒeƒ“ƒg‹N“®
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//ã‚«ãƒ¡ãƒ©
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);//ç”»åƒã®ä¿å­˜å…ˆ
+        //ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆèµ·å‹•
         startActivityForResult(intent, IMAGE_CHOOSER_RESULTCODE);
     }
-    //‰æ‘œ‚ğ‘I‘ğ‚µ‚½Œã‚ÉÀs‚³‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”BƒCƒ“ƒeƒ“ƒg‚ÌÀs‚³‚ê‚½Œã‚ÉƒR[ƒ‹ƒoƒbƒN‚³‚ê‚éB©“®“I‚ÉÀs‚³‚ê‚Ü‚·B
+    //ç”»åƒã‚’é¸æŠã—ãŸå¾Œã«å®Ÿè¡Œã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã€‚ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã®å®Ÿè¡Œã•ã‚ŒãŸå¾Œã«ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã•ã‚Œã‚‹ã€‚è‡ªå‹•çš„ã«å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //‘¼‚ÌƒCƒ“ƒeƒ“ƒg‚ÌÀsŒ‹‰Ê‚Æ‹æ•Ê‚·‚é‚½‚ßstartActivity‚Åw’è‚µ‚½’è”IMAGE_CHOOSER_RESULTCODE‚Æˆê’v‚·‚é‚©Šm”F
+        //ä»–ã®ã‚¤ãƒ³ãƒ†ãƒ³ãƒˆã®å®Ÿè¡Œçµæœã¨åŒºåˆ¥ã™ã‚‹ãŸã‚startActivityã§æŒ‡å®šã—ãŸå®šæ•°IMAGE_CHOOSER_RESULTCODEã¨ä¸€è‡´ã™ã‚‹ã‹ç¢ºèª
         if (requestCode == IMAGE_CHOOSER_RESULTCODE) {
-            //¸”s‚Ì
+            //å¤±æ•—ã®æ™‚
             if (resultCode != RESULT_OK ) {
                 return;
             }
 
-            //‰æ‘œ‚ğæ“¾‚·‚éBXperia‚Ìê‡‚Ídata‚É‰æ‘œ‚ª“ü‚Á‚Ä‚¢‚éB‚»‚êˆÈŠO‚Íintent‚Åİ’è‚µ‚½mImageUri‚É“ü‚Á‚Ä‚¢‚éB
+            //ç”»åƒã‚’å–å¾—ã™ã‚‹ã€‚Xperiaã®å ´åˆã¯dataã«ç”»åƒãŒå…¥ã£ã¦ã„ã‚‹ã€‚ãã‚Œä»¥å¤–ã¯intentã§è¨­å®šã—ãŸmImageUriã«å…¥ã£ã¦ã„ã‚‹ã€‚
             Uri result;
             if(data != null) {
                 result = data.getData();
@@ -130,50 +153,51 @@ public class PostActivity extends ActionBarActivity {
                 result = mImageUri;
                 Log.d("mogi:mImageUri:", result.toString());
             }
-            //‰æ–Ê‚É‰æ‘œ‚ğ•\¦
+            //ç”»é¢ã«ç”»åƒã‚’è¡¨ç¤º
+            Log.d("test_xxx", result.toString());
             ImageView iv = (ImageView) findViewById(R.id.image_view1);
             iv.setImageURI(result);
 
 
-            //‰æ‘œ‚ÌƒpƒX‚ğİ’èBUpload‚Å‚Â‚©‚¤B
+            //ç”»åƒã®ãƒ‘ã‚¹ã‚’è¨­å®šã€‚Uploadã§ã¤ã‹ã†ã€‚
             mImagePath = getFilePathByUri(result);
 
         }
     }
-    //uri‚©‚çƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾‚·‚éBƒo[ƒWƒ‡ƒ“‚É‚æ‚Á‚Äˆ—‚ªˆá‚¤BKiiCloud‚Ìƒ`ƒ…[ƒgƒŠƒAƒ‹‚©‚çæ‚è‚ñ‚¾B”Ä—p“I‚Ég‚¦‚Ü‚·B
+    //uriã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«ã‚ˆã£ã¦å‡¦ç†ãŒé•ã†ã€‚KiiCloudã®ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ã‹ã‚‰å–ã‚Šè¾¼ã‚“ã ã€‚æ±ç”¨çš„ã«ä½¿ãˆã¾ã™ã€‚
     private String getFilePathByUri(Uri selectedFileUri) {
-        //4.2ˆÈ~‚Ì
+        //4.2ä»¥é™ã®æ™‚
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             // Workaround of retrieving file image through ContentResolver
             // for Android4.2 or later
             String filePath = null;
             FileOutputStream fos = null;
             try {
-                //ƒrƒbƒgƒ}ƒbƒv‚ğæ“¾
+                //ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’å–å¾—
                 Bitmap bmp = MediaStore.Images.Media.getBitmap(
                         this.getContentResolver(), selectedFileUri);
-                //ˆê•Û‘¶‚·‚éƒfƒBƒŒƒNƒgƒŠBƒAƒvƒŠ‚É‰‚¶‚Ägsapp‚Ì•”•ª‚ğ•ÏX‚µ‚½‚Ù‚¤‚ª—Ç‚¢
+                //ä¸€æ™‚ä¿å­˜ã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€‚ã‚¢ãƒ—ãƒªã«å¿œã˜ã¦gsappã®éƒ¨åˆ†ã‚’å¤‰æ›´ã—ãŸã»ã†ãŒè‰¯ã„
                 String cacheDir = Environment.getExternalStorageDirectory()
                         .getAbsolutePath() + File.separator + "gsapp";
-                //ƒfƒBƒŒƒNƒgƒŠì¬
+                //ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
                 File createDir = new File(cacheDir);
                 if (!createDir.exists()) {
                     createDir.mkdir();
                 }
-                //ˆêƒtƒ@ƒCƒ‹–¼‚ğì¬B–ˆ‰ñã‘‚«
+                //ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ä½œæˆã€‚æ¯å›ä¸Šæ›¸ã
                 filePath = cacheDir + File.separator + "upload.jpg";
                 File file = new File(filePath);
-                //ƒrƒbƒgƒ}ƒbƒv‚ğjpg‚É•ÏŠ·‚µ‚Äˆê“I‚É•Û‘¶‚·‚éB
+                //ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’jpgã«å¤‰æ›ã—ã¦ä¸€æ™‚çš„ã«ä¿å­˜ã™ã‚‹ã€‚
                 fos = new FileOutputStream(file);
                 bmp.compress(Bitmap.CompressFormat.JPEG, 95, fos);
                 fos.flush();
                 fos.getFD().sync();
             } catch (Exception e) {
                 filePath = null;
-            } finally {//‚©‚È‚ç‚¸ÅŒã‚ÉÀs‚·‚éˆ—
+            } finally {//ã‹ãªã‚‰ãšæœ€å¾Œã«å®Ÿè¡Œã™ã‚‹å‡¦ç†
                 if (fos != null) {
                     try {
-                        //ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+                        //ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
                         fos.close();
                     } catch (Exception e) {
                         // Nothing to do
@@ -182,7 +206,7 @@ public class PostActivity extends ActionBarActivity {
             }
             return filePath;
         } else {
-            //ƒf[ƒ^‚©‚ç’T‚·
+            //ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æ¢ã™
             String[] filePathColumn = { MediaStore.MediaColumns.DATA };
             Cursor cursor = this.getContentResolver().query(
                     selectedFileUri, filePathColumn, null, null, null);
@@ -196,7 +220,7 @@ public class PostActivity extends ActionBarActivity {
                 if (columnIndex < 0) {
                     return null;
                 }
-                //‚±‚ê‚ªƒtƒ@ƒCƒ‹‚ÌƒpƒX
+                //ã“ã‚ŒãŒãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
                 String picturePath = cursor.getString(columnIndex);
                 return picturePath;
             } finally {
@@ -206,89 +230,92 @@ public class PostActivity extends ActionBarActivity {
     }
 
 
-    //“Šeƒ{ƒ^ƒ“‚ğŒä‚µ‚½‚Ìˆ—
+    //æŠ•ç¨¿ãƒœã‚¿ãƒ³ã‚’å¾¡ã—ãŸæ™‚ã®å‡¦ç†
     public void onPostButtonClicked(View v) {
-        //“ü—Í•¶š‚ğ“¾‚é
+        //å…¥åŠ›æ–‡å­—ã‚’å¾—ã‚‹
+        EditText mTitleField = (EditText) (findViewById(R.id.title_field));
+        title = mTitleField.getText().toString();
         EditText mCommentField = (EditText) (findViewById(R.id.comment_field));
         comment = mCommentField.getText().toString();
         //Log.d("mogi comment", ":" + comment + ":");
-        //–¢“ü—Í‚Ì‚ÍƒGƒ‰[.""‚Í•¶š‚ª‹ó
+        //æœªå…¥åŠ›ã®æ™‚ã¯ã‚¨ãƒ©ãƒ¼.""ã¯æ–‡å­—ãŒç©º
         if (comment.equals("")) {
-            //ƒ_ƒCƒAƒƒO‚ğ•\¦
+            //ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
             showAlert(getString(R.string.no_data_message));
             return;
         }
-        //‰æ‘œ‚ğUP‚µ‚Ä‚©‚çmessages‚É“ŠeB
+        //ç”»åƒã‚’UPã—ã¦ã‹ã‚‰messagesã«æŠ•ç¨¿ã€‚
         if (mImagePath != null) {
-            //ƒtƒ@ƒCƒ‹‚ğUPAŠ®—¹‚µ‚½‚ÉpostMessages‚ğÀs‚µ‚Ä‚¢‚éB
+            //ãƒ•ã‚¡ã‚¤ãƒ«ã‚’UPã€å®Œäº†ã—ãŸæ™‚ã«postMessagesã‚’å®Ÿè¡Œã—ã¦ã„ã‚‹ã€‚
             uploadFile(mImagePath);
         }else {
-            //‰æ‘œ‚ª‚È‚¢‚Æ‚«‚Ícomment‚¾‚¯“o˜^
+            //ç”»åƒãŒãªã„ã¨ãã¯commentã ã‘ç™»éŒ²
             postMessages(null);
         }
     }
-    //“Šeˆ—B‰æ‘œ‚ÌUpload‚ª‚¤‚Ü‚­‚¢‚Á‚½‚Æ‚«‚ÍAurl‚ÉŒöŠJ‚ÌURL‚ªƒZƒbƒg‚³‚ê‚é
+    //æŠ•ç¨¿å‡¦ç†ã€‚ç”»åƒã®UploadãŒã†ã¾ãã„ã£ãŸã¨ãã¯ã€urlã«å…¬é–‹ã®URLãŒã‚»ãƒƒãƒˆã•ã‚Œã‚‹
     public void postMessages(String url) {
-        //ƒoƒPƒbƒg–¼‚ğİ’èBƒoƒPƒbƒgDB‚Ìƒe[ƒuƒ‹‚İ‚½‚¢‚È‚à‚ÌBExcel‚ÌƒV[ƒg‚İ‚½‚¢‚È‚à‚ÌB
+        //ãƒã‚±ãƒƒãƒˆåã‚’è¨­å®šã€‚ãƒã‚±ãƒƒãƒˆï¼DBã®ãƒ†ãƒ¼ãƒ–ãƒ«ã¿ãŸã„ãªã‚‚ã®ã€‚Excelã®ã‚·ãƒ¼ãƒˆã¿ãŸã„ãªã‚‚ã®ã€‚
         KiiBucket bucket = Kii.bucket("messages");
         KiiObject object = bucket.object();
-        //JsonŒ`®‚ÅKey‚Ìcomment‚ğƒZƒbƒg.{"comment":"‚±‚ß‚ñ‚Æ‚Å‚·","imageUrl":"http://xxx.com/xxxx"}
+        //Jsonå½¢å¼ã§Keyã®commentã‚’ã‚»ãƒƒãƒˆ.{"comment":"ã“ã‚ã‚“ã¨ã§ã™","imageUrl":"http://xxx.com/xxxx"}
         object.set("comment", comment);
-        //‰æ‘œ‚ª‚ ‚é‚Æ‚«‚¾‚¯ƒZƒbƒg
+        object.set("title", title);
+        //ç”»åƒãŒã‚ã‚‹ã¨ãã ã‘ã‚»ãƒƒãƒˆ
         if(url != null) {
             object.set("imageUrl", url);
         }
-        //ƒf[ƒ^‚ğKiiCloud‚É•Û‘¶
+        //ãƒ‡ãƒ¼ã‚¿ã‚’KiiCloudã«ä¿å­˜
         object.save(new KiiObjectCallBack() {
-            //•Û‘¶Œ‹‰Ê‚ª‹A‚Á‚Ä‚­‚éƒR[ƒ‹ƒoƒbƒNŠÖ”B©“®“I‚ÉŒÄ‚Ño‚³‚ê‚éB
+            //ä¿å­˜çµæœãŒå¸°ã£ã¦ãã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã€‚è‡ªå‹•çš„ã«å‘¼ã³å‡ºã•ã‚Œã‚‹ã€‚
             @Override
             public void onSaveCompleted(int token, KiiObject object, Exception exception) {
-                //ƒGƒ‰[‚ª‚È‚¢‚Æ‚«
+                //ã‚¨ãƒ©ãƒ¼ãŒãªã„ã¨ã
                 if (exception == null) {
-                    // Intent ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚éBgetApplicationContext()‚Å©•ª‚ÌƒRƒ“ƒeƒLƒXƒg‚ğæ“¾B‘JˆÚæ‚ÌƒAƒNƒeƒBƒrƒeƒB[‚ğ.class‚Åw’è
+                    // Intent ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚getApplicationContext()ã§è‡ªåˆ†ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã€‚é·ç§»å…ˆã®ã‚¢ã‚¯ãƒ†ã‚£ãƒ“ãƒ†ã‚£ãƒ¼ã‚’.classã§æŒ‡å®š
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    //Activity‚ğI—¹‚µ‚Ü‚·B
+                    //Activityã‚’çµ‚äº†ã—ã¾ã™ã€‚
                     finish();
                 } else {
-                    //e‚ªKiiCloud“Á—L‚ÌƒNƒ‰ƒX‚ğŒp³‚µ‚Ä‚¢‚é
+                    //eãŒKiiCloudç‰¹æœ‰ã®ã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿ã—ã¦ã„ã‚‹æ™‚
                     if (exception instanceof CloudExecutionException)
-                        //KiiCloud“Á—L‚ÌƒGƒ‰[ƒƒbƒZ[ƒW‚ğ•\¦BƒtƒH[ƒ}ƒbƒg‚ªˆá‚¤
+                        //KiiCloudç‰¹æœ‰ã®ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã€‚ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒé•ã†
                         showAlert(Util.generateAlertMessage((CloudExecutionException) exception));
                     else
-                        //ˆê”Ê“I‚ÈƒGƒ‰[‚ğ•\¦
+                        //ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¡¨ç¤º
                         showAlert(exception.getLocalizedMessage());
                 }
             }
         });
     }
-    //‰æ‘œ‚ğKiiCloud‚Ìimages‚ÉUP‚·‚éBQlFƒ`ƒ…[ƒgƒŠƒAƒ‹Ahttp://www.riaxdnp.jp/?p=6775
+    //ç”»åƒã‚’KiiCloudã®imagesã«UPã™ã‚‹ã€‚å‚è€ƒï¼šãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ã€http://www.riaxdnp.jp/?p=6775
     private void uploadFile(String path) {
-        //ƒCƒ[ƒW‚ğ•Û‘¶‚·‚éƒoƒPƒbƒg–¼‚ğİ’èB‚·‚×‚Ä‚±‚±‚É•Û‘¶‚µ‚Ämessage‚É‚Í‚»‚ÌhttpƒpƒX‚ğİ’è‚·‚éBƒoƒPƒbƒgDB‚Ìƒe[ƒuƒ‹‚İ‚½‚¢‚È‚à‚ÌBExcel‚ÌƒV[ƒg‚İ‚½‚¢‚È‚à‚ÌB
+        //ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä¿å­˜ã™ã‚‹ãƒã‚±ãƒƒãƒˆåã‚’è¨­å®šã€‚ã™ã¹ã¦ã“ã“ã«ä¿å­˜ã—ã¦messageã«ã¯ãã®httpãƒ‘ã‚¹ã‚’è¨­å®šã™ã‚‹ã€‚ãƒã‚±ãƒƒãƒˆï¼DBã®ãƒ†ãƒ¼ãƒ–ãƒ«ã¿ãŸã„ãªã‚‚ã®ã€‚Excelã®ã‚·ãƒ¼ãƒˆã¿ãŸã„ãªã‚‚ã®ã€‚
         KiiBucket bucket = Kii.bucket("images");
         KiiObject object = bucket.object();
-        //UpŒã‚ÉŒöŠJİ’è‚·‚é‚Ì‚Å•Û‘¶
+        //Upå¾Œã«å…¬é–‹è¨­å®šã™ã‚‹ã®ã§ä¿å­˜
         mKiiImageObject = object;
         File f = new File(path);
-        //KiiCloud‚ÉUP‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX
+        //KiiCloudã«UPã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
         KiiUploader uploader = object.uploader(this, f);
-        //”ñ“¯Šú‚ÅUp‚·‚éB
+        //éåŒæœŸã§Upã™ã‚‹ã€‚
         uploader.transferAsync(new KiiRTransferCallback() {
-            //Š®—¹‚µ‚½
+            //å®Œäº†ã—ãŸæ™‚
             @Override
             public void onTransferCompleted(KiiRTransfer operator, Exception e) {
                 if (e == null) {
-                    //¬Œ÷‚Ì
-                    //‰æ‘œ‚ğˆê——‚Å•\¦‚·‚é‚½‚ßAŒöŠJó‘Ô‚É‚·‚éBQlFhttp://www.riaxdnp.jp/?p=6841
-                    // URIw’èObj‚ğƒŠƒtƒŒƒbƒVƒ…‚µ‚ÄAÅVó‘Ô‚É‚·‚é
+                    //æˆåŠŸã®æ™‚
+                    //ç”»åƒã‚’ä¸€è¦§ã§è¡¨ç¤ºã™ã‚‹ãŸã‚ã€å…¬é–‹çŠ¶æ…‹ã«ã™ã‚‹ã€‚å‚è€ƒï¼šhttp://www.riaxdnp.jp/?p=6841
+                    // URIæŒ‡å®šObjã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ã—ã¦ã€æœ€æ–°çŠ¶æ…‹ã«ã™ã‚‹
                     mKiiImageObject.refresh(new KiiObjectCallBack() {
                         public void onRefreshCompleted(int token, KiiObject object, Exception e) {
                             if (e == null) {
-                                // ObjectBody‚ÌŒöŠJİ’è‚·‚é
+                                // ObjectBodyã®å…¬é–‹è¨­å®šã™ã‚‹
                                 object.publishBody(new KiiObjectPublishCallback() {
                                     @Override
                                     public void onPublishCompleted(String url, KiiObject kiiObject, Exception e) {
                                         Log.d("mogiurl", url);
-                                        //‰æ‘œ‚ÌURL•t‚«‚Åmessages‚É“Še‚·‚éB
+                                        //ç”»åƒã®URLä»˜ãã§messagesã«æŠ•ç¨¿ã™ã‚‹ã€‚
                                         postMessages(url);
                                     }
                                 });
@@ -298,7 +325,7 @@ public class PostActivity extends ActionBarActivity {
 
 
                 } else {
-                    //¸”s‚Ì
+                    //å¤±æ•—ã®æ™‚
                     Throwable cause = e.getCause();
                     if (cause instanceof CloudExecutionException)
                         showAlert(Util
@@ -309,7 +336,7 @@ public class PostActivity extends ActionBarActivity {
             }
         });
     }
-    //ƒGƒ‰[ƒ_ƒCƒAƒƒO‚ğ•\¦‚·‚é
+    //ã‚¨ãƒ©ãƒ¼ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã™ã‚‹
     void showAlert(String message) {
         DialogFragment newFragment = AlertDialogFragment.newInstance(R.string.operation_failed, message, null);
         newFragment.show(getFragmentManager(), "dialog");

@@ -33,7 +33,8 @@ public class MessageRecordsAdapter extends ArrayAdapter<MessageRecord> {
 
         //レイアウトにある画像と文字のViewを所得します。
         NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image1);
-        TextView textView = (TextView) convertView.findViewById(R.id.text1);
+        TextView textView1 = (TextView) convertView.findViewById(R.id.text1);
+        TextView textView2 = (TextView) convertView.findViewById(R.id.text2);
 
         //表示するセルの位置からデータをMessageRecordのデータを取得します。
         MessageRecord imageRecord = getItem(position);
@@ -41,7 +42,8 @@ public class MessageRecordsAdapter extends ArrayAdapter<MessageRecord> {
         //mImageLoaderを使って画像をダウンロードし、Viewにセットします。
         imageView.setImageUrl(imageRecord.getImageUrl(), mImageLoader);
         //Viewに文字をセットします。
-        textView.setText(imageRecord.getComment());
+        textView1.setText(imageRecord.getTitle());
+        textView2.setText(imageRecord.getComment());
         //1つのセルのViewを返します。
         return convertView;
     }
