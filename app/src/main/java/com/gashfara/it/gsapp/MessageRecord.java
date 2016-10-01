@@ -6,13 +6,15 @@ public class MessageRecord {
     private String title;
     private String comment;
     private String id;
+    private int goodCount;
 
     //データを１つ作成する関数です。項目が増えたら増やしましょう。
-    public MessageRecord(String id,String imageUrl, String title, String comment) {
+    public MessageRecord(String id,String imageUrl, String title, String comment,int goodCount) {
         this.imageUrl = imageUrl;
         this.title = title;
         this.comment = comment;
         this.id = id;
+        this.goodCount = goodCount;
 
     }
     //それぞれの項目を返す関数です。項目が増えたら増やしましょう。
@@ -28,4 +30,7 @@ public class MessageRecord {
     public String getId() {
         return id;
     }
+    public int getGoodCount() {return goodCount;}
+    //セットする関数.項目が増えたら追加しましょう
+    public void setGoodCount(int goodCount){this.goodCount = goodCount;}
 }
